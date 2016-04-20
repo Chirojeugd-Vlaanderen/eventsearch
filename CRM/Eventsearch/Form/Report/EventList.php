@@ -1,18 +1,19 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | be.chiro.civi.eventsearch                                          |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2016                                |
+ | Adaptions for event list Copyright Chirojeugd-Vlaanderen vzw 2016  |
+ | Licensed to CiviCRM under the Academic Free License version 3.0.   |
  +--------------------------------------------------------------------+
- | This file is a part of CiviCRM.                                    |
+ | This extension is free software; you can copy, modify, and         |
+ | distribute it under the terms of the GNU Affero General Public     |
+ | License Version 3, 19 November 2007. and the CiviCRM Licensing     |
+ | Exception.                                                         |
  |                                                                    |
- | CiviCRM is free software; you can copy, modify, and distribute it  |
- | under the terms of the GNU Affero General Public License           |
- | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
- |                                                                    |
- | CiviCRM is distributed in the hope that it will be useful, but     |
- | WITHOUT ANY WARRANTY; without even the implied warranty of         |
+ | This extension is distributed in the hope that it will be useful,  |
+ | but WITHOUT ANY WARRANTY; without even the implied warranty of     |
  | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
  | See the GNU Affero General Public License for more details.        |
  |                                                                    |
