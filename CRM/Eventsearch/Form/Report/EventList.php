@@ -251,12 +251,28 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
         $rows[$rowNum]['civicrm_event_title_link'] = $url;
         $rows[$rowNum]['civicrm_event_title_hover'] = ts('Details bivak');
 
-        //handle event type
+        // handle event type
         if (array_key_exists('civicrm_event_event_type_id', $row)) {
           if ($value = $row['civicrm_event_event_type_id']) {
             $rows[$rowNum]['civicrm_event_event_type_id'] = $eventType[$value];
           }
         }
+        
+        // handle state/province
+        if (array_key_exists('civicrm_address_state_province_id', $row)) {
+          if ($value = $row['civicrm_address_state_province_id']) {
+            $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
+          }
+          $entryFound = TRUE;
+        }
+
+        // handle country
+        if (array_key_exists('civicrm_address_country_id', $row)) {
+          if ($value = $row['civicrm_address_country_id']) {
+            $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
+          }
+          $entryFound = TRUE;
+        }        
       }
     }
   }
