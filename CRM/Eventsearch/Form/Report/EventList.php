@@ -94,6 +94,11 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
         ),
+        'order_bys' => array(
+          'title' => array('title' => ts('Event Title')),
+          'event_start_date' => NULL,
+          'event_end_date' => NULL,
+        ),
       ),
       // I don't really need loc_block, except for joining.
       'civicrm_loc_block' => array(
