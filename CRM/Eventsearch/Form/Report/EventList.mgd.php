@@ -11,8 +11,8 @@ return array (
     'params' => 
     array (
       'version' => 3,
-      'label' => 'EventList',
-      'description' => 'EventList (be.chiro.civi.eventsearch)',
+      'label' => 'Event List',
+      'description' => 'Event List',
       'class_name' => 'CRM_Eventsearch_Form_Report_EventList',
       'report_url' => 'be.chiro.civi.eventsearch/eventlist',
       'component' => 'CiviEvent',

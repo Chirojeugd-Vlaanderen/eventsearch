@@ -2,7 +2,7 @@
 <extension key="be.chiro.civi.eventsearch" type="module">
   <file>eventsearch</file>
   <name>eventsearch</name>
-  <description>Report template to facilitate fine grained event searches</description>
+  <description>Event related report templates</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Johan Vervloet</author>
@@ -15,17 +15,19 @@
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <releaseDate>2016-04-20</releaseDate>
-  <version>0.1-alpha3</version>
+  <version>0.1-alpha4</version>
   <compatibility>
     <ver>4.6</ver>
     <!-- Not tested on earlier versions. It might work. -->
   </compatibility>
   <comments>
-    This CiviCRM extension contains a report template that allows more fine grained
-    event searches.
+    At the moment this extension contains only one report template (Event List),
+    that allows more fine grained event searches.
 
     It allows searching on event location, or on event custom fields, which is
     useful if you want to manage a whole lot of events.
+
+    I plan to add other reports at some point in the future.
   </comments>
   <civix>
     <namespace>CRM/Eventsearch</namespace>
