@@ -255,7 +255,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
 
         $url = CRM_Utils_System::url("civicrm/event/info", 'id=' . $row['civicrm_event_id'], $this->_absoluteUrl);
         $rows[$rowNum]['civicrm_event_title_link'] = $url;
-        $rows[$rowNum]['civicrm_event_title_hover'] = ts('Details bivak');
+        $rows[$rowNum]['civicrm_event_title_hover'] = ts('Event details');
 
         // handle event type
         if (array_key_exists('civicrm_event_event_type_id', $row)) {

@@ -69,6 +69,11 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
             'title' => ts('Event Start Date'),
           ),
           'event_end_date' => array('title' => ts('Event End Date')),
+          'total_participants' => array(
+            'title' => ts('Total participants'),
+            'dbAlias' => 'COUNT(*)',
+            'default' => TRUE,
+          ),
         ),
         'filters' => array(
           'id' => array(
@@ -98,6 +103,7 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
           'event_start_date' => NULL,
           'event_end_date' => NULL,
         ),
+        'grouping' => 'event-fields',
         'group_bys' => array(
           'id' => array(
             'title' => ts('Event ID'),
@@ -254,9 +260,14 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
           $rows[$rowNum]['civicrm_event_title'] = '???';
         }
 
+        // handle link to url
         $url = CRM_Utils_System::url("civicrm/event/info", 'id=' . $row['civicrm_event_id'], $this->_absoluteUrl);
         $rows[$rowNum]['civicrm_event_title_link'] = $url;
-        $rows[$rowNum]['civicrm_event_title_hover'] = ts('Details bivak');
+        $rows[$rowNum]['civicrm_event_title_hover'] = ts('Event details');
+
+        // handle link to all participants
+        $rows[$rowNum]['civicrm_event_total_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&event=${row['civicrm_event_id']}");
 
         // handle event type
         if (array_key_exists('civicrm_event_event_type_id', $row)) {
