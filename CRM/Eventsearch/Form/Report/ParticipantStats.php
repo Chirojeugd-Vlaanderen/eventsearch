@@ -49,7 +49,6 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
    * Constructor
    */
   public function __construct() {
-
     $this->_columns = array(
       'civicrm_event' => array(
         'dao' => 'CRM_Event_DAO_Event',
@@ -99,13 +98,17 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
           'event_start_date' => NULL,
           'event_end_date' => NULL,
         ),
+        'group_bys' => array(
+          'id' => array(
+            'title' => ts('Event ID'),
+            'default' => TRUE,
+          ),
+        ),
       ),
-      // I don't really need loc_block, except for joining.
-      'civicrm_loc_block' => array(
-        'dao' => 'CRM_Core_DAO_LocBlock',
+      'civicrm_participant' => array(
+        'dao' => 'CRM_Event_DAO_Participant',
       ),
     );
-    $this->_columns += $this->getAddressColumns();
     parent::__construct();
   }
 
@@ -132,10 +135,8 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
 
   public function from() {
     $this->_from = " FROM civicrm_event {$this->_aliases['civicrm_event']}
-      LEFT OUTER JOIN civicrm_loc_block {$this->_aliases['civicrm_loc_block']}
-        ON {$this->_aliases['civicrm_event']}.loc_block_id = {$this->_aliases['civicrm_loc_block']}.id
-      LEFT OUTER JOIN civicrm_address {$this->_aliases['civicrm_address']}
-        ON {$this->_aliases['civicrm_loc_block']}.address_id = {$this->_aliases['civicrm_address']}.id";
+      LEFT OUTER JOIN civicrm_participant {$this->_aliases['civicrm_participant']}
+        ON {$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participant']}.event_id";
   }
 
   public function where() {
@@ -263,22 +264,6 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
             $rows[$rowNum]['civicrm_event_event_type_id'] = $eventType[$value];
           }
         }
-        
-        // handle state/province
-        if (array_key_exists('civicrm_address_state_province_id', $row)) {
-          if ($value = $row['civicrm_address_state_province_id']) {
-            $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
-          }
-          $entryFound = TRUE;
-        }
-
-        // handle country
-        if (array_key_exists('civicrm_address_country_id', $row)) {
-          if ($value = $row['civicrm_address_country_id']) {
-            $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
-          }
-          $entryFound = TRUE;
-        }        
       }
     }
   }
