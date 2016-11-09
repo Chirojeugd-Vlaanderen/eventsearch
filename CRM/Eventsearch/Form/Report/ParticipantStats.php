@@ -33,7 +33,7 @@
  * $Id$
  *
  */
-class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
+class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event {
 
   protected $_summary = NULL;
 
@@ -49,7 +49,6 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
    * Constructor
    */
   public function __construct() {
-
     $this->_columns = array(
       'civicrm_event' => array(
         'dao' => 'CRM_Event_DAO_Event',
@@ -64,12 +63,26 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
           ),
           'event_type_id' => array(
             'title' => ts('Event Type'),
-            'required' => TRUE,
           ),
           'event_start_date' => array(
             'title' => ts('Event Start Date'),
           ),
           'event_end_date' => array('title' => ts('Event End Date')),
+          'total_participants' => array(
+            'title' => ts('Total participants'),
+            'dbAlias' => 'COUNT(*)',
+            'default' => TRUE,
+          ),
+          'counted_participants' => array(
+            'title' => ts('All counted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be qualified with a table alias.
+            'dbAlias' => 'SUM(is_counted)',
+          ),
+          'uncounted_participants' => array(
+            'title' => ts('All uncounted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed  with a table alias.
+            'dbAlias' => 'SUM(1 - is_counted)',
+          ),
         ),
         'filters' => array(
           'id' => array(
@@ -99,13 +112,43 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
           'event_start_date' => NULL,
           'event_end_date' => NULL,
         ),
+        'grouping' => 'event-fields',
+        'group_bys' => array(
+          'id' => array(
+            'title' => ts('Event ID'),
+            'default' => TRUE,
+          ),
+        ),
       ),
-      // I don't really need loc_block, except for joining.
-      'civicrm_loc_block' => array(
-        'dao' => 'CRM_Core_DAO_LocBlock',
+      'civicrm_participant' => array(
+        'dao' => 'CRM_Event_DAO_Participant',
       ),
+      'civicrm_participant_status_type' => array(
+        'dao' => 'CRM_Event_DAO_ParticipantStatusType',
+      )
     );
-    $this->_columns += $this->getAddressColumns();
+
+    // Add columns for each searchable role.
+    $roles = CRM_Event_BAO_Participant::buildOptions('role_id', 'search');
+
+    foreach ($roles as $roleId => $label) {
+      // I don't like inserting things into SQL, so let's validate first:
+      is_numeric($roleId) or die('WTF');
+
+      $this->_columns['civicrm_event']['fields']["counted_$roleId"] = array(
+        'title' => ts("Counted ${label}"),
+        // TODO: qualify role_id and is_counted
+        'dbAlias' => "SUM(role_id = $roleId AND is_counted = 1)",
+        'default' => TRUE,
+      );
+      $this->_columns['civicrm_event']['fields']["uncounted_$roleId"] = array(
+        'title' => ts("Uncounted ${label}"),
+        // TODO: qualify role_id and is_counted
+        'dbAlias' => "SUM(role_id = $roleId AND is_counted = 0)",
+        'default' => TRUE,
+      );
+    }
+
     parent::__construct();
   }
 
@@ -132,10 +175,10 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
 
   public function from() {
     $this->_from = " FROM civicrm_event {$this->_aliases['civicrm_event']}
-      LEFT OUTER JOIN civicrm_loc_block {$this->_aliases['civicrm_loc_block']}
-        ON {$this->_aliases['civicrm_event']}.loc_block_id = {$this->_aliases['civicrm_loc_block']}.id
-      LEFT OUTER JOIN civicrm_address {$this->_aliases['civicrm_address']}
-        ON {$this->_aliases['civicrm_loc_block']}.address_id = {$this->_aliases['civicrm_address']}.id";
+      LEFT OUTER JOIN civicrm_participant {$this->_aliases['civicrm_participant']}
+        ON {$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participant']}.event_id 
+      LEFT OUTER JOIN civicrm_participant_status_type {$this->_aliases['civicrm_participant_status_type']}
+        ON {$this->_aliases['civicrm_participant']}.status_id = {$this->_aliases['civicrm_participant_status_type']}.id";
   }
 
   public function where() {
@@ -246,39 +289,38 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
   public function alterDisplay(&$rows) {
 
     if (is_array($rows)) {
-      $eventType = CRM_Core_OptionGroup::values('event_type');
-
       foreach ($rows as $rowNum => $row) {
         if (empty($row['civicrm_event_title'])) {
           $rows[$rowNum]['civicrm_event_title'] = '???';
         }
 
+        // handle link to url
         $url = CRM_Utils_System::url("civicrm/event/info", 'id=' . $row['civicrm_event_id'], $this->_absoluteUrl);
         $rows[$rowNum]['civicrm_event_title_link'] = $url;
         $rows[$rowNum]['civicrm_event_title_hover'] = ts('Event details');
 
+        // link stats to the actual participants
+        $rows[$rowNum]['civicrm_event_total_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&event=${row['civicrm_event_id']}");
+        $rows[$rowNum]['civicrm_event_counted_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&status=true&event=${row['civicrm_event_id']}");
+        $rows[$rowNum]['civicrm_event_uncounted_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&status=false&event=${row['civicrm_event_id']}");
+        $roles = CRM_Event_BAO_Participant::buildOptions('role_id', 'search');
+        foreach (array_keys($roles) as $roleId) {
+          $rows[$rowNum]["civicrm_event_counted_${roleId}_link"] =
+            CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&role=${roleId}&status=true&event=${row['civicrm_event_id']}");
+          $rows[$rowNum]["civicrm_event_uncounted_${roleId}_link"] =
+            CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&role=${roleId}&status=false&event=${row['civicrm_event_id']}");
+        }
+
         // handle event type
+        $eventType = CRM_Core_OptionGroup::values('event_type');
         if (array_key_exists('civicrm_event_event_type_id', $row)) {
           if ($value = $row['civicrm_event_event_type_id']) {
             $rows[$rowNum]['civicrm_event_event_type_id'] = $eventType[$value];
           }
         }
-        
-        // handle state/province
-        if (array_key_exists('civicrm_address_state_province_id', $row)) {
-          if ($value = $row['civicrm_address_state_province_id']) {
-            $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
-          }
-          $entryFound = TRUE;
-        }
-
-        // handle country
-        if (array_key_exists('civicrm_address_country_id', $row)) {
-          if ($value = $row['civicrm_address_country_id']) {
-            $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
-          }
-          $entryFound = TRUE;
-        }        
       }
     }
   }
