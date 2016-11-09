@@ -289,8 +289,6 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
   public function alterDisplay(&$rows) {
 
     if (is_array($rows)) {
-      $eventType = CRM_Core_OptionGroup::values('event_type');
-
       foreach ($rows as $rowNum => $row) {
         if (empty($row['civicrm_event_title'])) {
           $rows[$rowNum]['civicrm_event_title'] = '???';
@@ -301,11 +299,23 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
         $rows[$rowNum]['civicrm_event_title_link'] = $url;
         $rows[$rowNum]['civicrm_event_title_hover'] = ts('Event details');
 
-        // handle link to all participants
+        // link stats to the actual participants
         $rows[$rowNum]['civicrm_event_total_participants_link'] =
           CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&event=${row['civicrm_event_id']}");
+        $rows[$rowNum]['civicrm_event_counted_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&status=true&event=${row['civicrm_event_id']}");
+        $rows[$rowNum]['civicrm_event_uncounted_participants_link'] =
+          CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&status=false&event=${row['civicrm_event_id']}");
+        $roles = CRM_Event_BAO_Participant::buildOptions('role_id', 'search');
+        foreach (array_keys($roles) as $roleId) {
+          $rows[$rowNum]["civicrm_event_counted_${roleId}_link"] =
+            CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&role=${roleId}&status=true&event=${row['civicrm_event_id']}");
+          $rows[$rowNum]["civicrm_event_uncounted_${roleId}_link"] =
+            CRM_Utils_System::url("civicrm/event/search", "reset=1&force=1&role=${roleId}&status=false&event=${row['civicrm_event_id']}");
+        }
 
         // handle event type
+        $eventType = CRM_Core_OptionGroup::values('event_type');
         if (array_key_exists('civicrm_event_event_type_id', $row)) {
           if ($value = $row['civicrm_event_event_type_id']) {
             $rows[$rowNum]['civicrm_event_event_type_id'] = $eventType[$value];
