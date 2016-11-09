@@ -75,16 +75,14 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
             'default' => TRUE,
           ),
           'counted_participants' => array(
-            'title' => ts('Counted participants'),
-            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed.
+            'title' => ts('All counted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be qualified with a table alias.
             'dbAlias' => 'SUM(is_counted)',
-            'default' => TRUE,
           ),
           'uncounted_participants' => array(
-            'title' => ts('Uncounted participants'),
-            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed.
+            'title' => ts('All uncounted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed  with a table alias.
             'dbAlias' => 'SUM(1 - is_counted)',
-            'default' => TRUE,
           ),
         ),
         'filters' => array(
@@ -130,6 +128,28 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
         'dao' => 'CRM_Event_DAO_ParticipantStatusType',
       )
     );
+
+    // Add columns for each searchable role.
+    $roles = CRM_Event_BAO_Participant::buildOptions('role_id', 'search');
+
+    foreach ($roles as $roleId => $label) {
+      // I don't like inserting things into SQL, so let's validate first:
+      is_numeric($roleId) or die('WTF');
+
+      $this->_columns['civicrm_event']['fields']["counted_$roleId"] = array(
+        'title' => ts("Counted ${label}"),
+        // TODO: qualify role_id and is_counted
+        'dbAlias' => "SUM(role_id = $roleId AND is_counted = 1)",
+        'default' => TRUE,
+      );
+      $this->_columns['civicrm_event']['fields']["uncounted_$roleId"] = array(
+        'title' => ts("Uncounted ${label}"),
+        // TODO: qualify role_id and is_counted
+        'dbAlias' => "SUM(role_id = $roleId AND is_counted = 0)",
+        'default' => TRUE,
+      );
+    }
+
     parent::__construct();
   }
 
