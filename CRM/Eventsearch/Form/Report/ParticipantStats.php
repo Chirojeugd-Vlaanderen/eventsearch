@@ -74,6 +74,18 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
             'dbAlias' => 'COUNT(*)',
             'default' => TRUE,
           ),
+          'counted_participants' => array(
+            'title' => ts('Counted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed.
+            'dbAlias' => 'SUM(is_counted)',
+            'default' => TRUE,
+          ),
+          'uncounted_participants' => array(
+            'title' => ts('Uncounted participants'),
+            // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed.
+            'dbAlias' => 'SUM(1 - is_counted)',
+            'default' => TRUE,
+          ),
         ),
         'filters' => array(
           'id' => array(
@@ -114,6 +126,9 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
       'civicrm_participant' => array(
         'dao' => 'CRM_Event_DAO_Participant',
       ),
+      'civicrm_participant_status_type' => array(
+        'dao' => 'CRM_Event_DAO_ParticipantStatusType',
+      )
     );
     parent::__construct();
   }
@@ -142,7 +157,9 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
   public function from() {
     $this->_from = " FROM civicrm_event {$this->_aliases['civicrm_event']}
       LEFT OUTER JOIN civicrm_participant {$this->_aliases['civicrm_participant']}
-        ON {$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participant']}.event_id";
+        ON {$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participant']}.event_id 
+      LEFT OUTER JOIN civicrm_participant_status_type {$this->_aliases['civicrm_participant_status_type']}
+        ON {$this->_aliases['civicrm_participant']}.status_id = {$this->_aliases['civicrm_participant_status_type']}.id";
   }
 
   public function where() {
