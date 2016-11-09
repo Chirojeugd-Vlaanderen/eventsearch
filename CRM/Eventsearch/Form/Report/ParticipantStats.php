@@ -63,7 +63,6 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
           ),
           'event_type_id' => array(
             'title' => ts('Event Type'),
-            'required' => TRUE,
           ),
           'event_start_date' => array(
             'title' => ts('Event Start Date'),
