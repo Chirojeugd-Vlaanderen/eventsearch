@@ -35,9 +35,9 @@
  */
 class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event {
 
-  protected $_summary = NULL;
+  protected $_summary = null;
 
-  protected $_add2groupSupported = FALSE;
+  protected $_add2groupSupported = false;
 
   protected $_customGroupExtends = array(
     'Event',
@@ -54,12 +54,12 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
         'dao' => 'CRM_Event_DAO_Event',
         'fields' => array(
           'id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
           'title' => array(
             'title' => ts('Event Title'),
-            'required' => TRUE,
+            'required' => true,
           ),
           'event_type_id' => array(
             'title' => ts('Event Type'),
@@ -71,7 +71,7 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
           'total_participants' => array(
             'title' => ts('Total participants'),
             'dbAlias' => 'COUNT(*)',
-            'default' => TRUE,
+            'default' => true,
           ),
           'counted_participants' => array(
             'title' => ts('All counted participants'),
@@ -109,14 +109,14 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
         ),
         'order_bys' => array(
           'title' => array('title' => ts('Event Title')),
-          'event_start_date' => NULL,
-          'event_end_date' => NULL,
+          'event_start_date' => null,
+          'event_end_date' => null,
         ),
         'grouping' => 'event-fields',
         'group_bys' => array(
           'id' => array(
             'title' => ts('Event ID'),
-            'default' => TRUE,
+            'default' => true,
           ),
         ),
       ),
@@ -139,13 +139,13 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
         'title' => ts("Counted ${label}"),
         // TODO: qualify role_id and is_counted
         'dbAlias' => "SUM(role_id = $roleId AND is_counted = 1)",
-        'default' => TRUE,
+        'default' => true,
       );
       $this->_columns['civicrm_event']['fields']["uncounted_$roleId"] = array(
         'title' => ts("Uncounted ${label}"),
         // TODO: qualify role_id and is_counted
         'dbAlias' => "SUM(role_id = $roleId AND is_counted = 0)",
-        'default' => TRUE,
+        'default' => true,
       );
     }
 
@@ -186,7 +186,7 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('filters', $table)) {
         foreach ($table['filters'] as $fieldName => $field) {
-          $clause = NULL;
+          $clause = null;
           if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE) {
             $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
             $from = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
