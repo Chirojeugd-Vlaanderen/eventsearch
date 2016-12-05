@@ -35,9 +35,9 @@
  */
 class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
 
-  protected $_summary = NULL;
+  protected $_summary = null;
 
-  protected $_add2groupSupported = FALSE;
+  protected $_add2groupSupported = false;
 
   protected $_customGroupExtends = array(
     'Event',
@@ -55,16 +55,16 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
         'dao' => 'CRM_Event_DAO_Event',
         'fields' => array(
           'id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
           'title' => array(
             'title' => ts('Event Title'),
-            'required' => TRUE,
+            'required' => true,
           ),
           'event_type_id' => array(
             'title' => ts('Event Type'),
-            'required' => TRUE,
+            'required' => true,
           ),
           'event_start_date' => array(
             'title' => ts('Event Start Date'),
@@ -96,8 +96,8 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
         ),
         'order_bys' => array(
           'title' => array('title' => ts('Event Title')),
-          'event_start_date' => NULL,
-          'event_end_date' => NULL,
+          'event_start_date' => null,
+          'event_end_date' => null,
         ),
       ),
       // I don't really need loc_block, except for joining.
@@ -143,7 +143,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('filters', $table)) {
         foreach ($table['filters'] as $fieldName => $field) {
-          $clause = NULL;
+          $clause = null;
           if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE) {
             $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
             $from = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
@@ -201,7 +201,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
 
     $this->buildColumnHeaders();
 
-    $sql = $this->buildQuery(TRUE);
+    $sql = $this->buildQuery(true);
 
     $dao = CRM_Core_DAO::executeQuery($sql);
 
@@ -226,7 +226,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
       }
       $rows[] = $row;
     }
-    $this->formatDisplay($rows, FALSE);
+    $this->formatDisplay($rows, false);
     unset($this->_columnHeaders['civicrm_event_id']);
 
     $this->doTemplateAssignment($rows);
@@ -267,17 +267,17 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
         // handle state/province
         if (array_key_exists('civicrm_address_state_province_id', $row)) {
           if ($value = $row['civicrm_address_state_province_id']) {
-            $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
+            $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, false);
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
 
         // handle country
         if (array_key_exists('civicrm_address_country_id', $row)) {
           if ($value = $row['civicrm_address_country_id']) {
-            $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
+            $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, false);
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }        
       }
     }
