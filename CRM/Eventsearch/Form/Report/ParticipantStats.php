@@ -39,94 +39,94 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
 
   protected $_add2groupSupported = FALSE;
 
-  protected $_customGroupExtends = array(
+  protected $_customGroupExtends = [
     'Event',
-  );
-  public $_drilldownReport = array('event/income' => 'Link to Detail Report');
+  ];
+  public $_drilldownReport = ['event/income' => 'Link to Detail Report'];
 
 
   /**
    * Constructor
    */
   public function __construct() {
-    $this->_columns = array(
-      'civicrm_event' => array(
+    $this->_columns = [
+      'civicrm_event' => [
         'dao' => 'CRM_Event_DAO_Event',
-        'fields' => array(
-          'id' => array(
+        'fields' => [
+          'id' => [
             'no_display' => TRUE,
             'required' => TRUE,
-          ),
-          'title' => array(
+          ],
+          'title' => [
             'title' => ts('Event Title'),
             'required' => TRUE,
-          ),
-          'event_type_id' => array(
+          ],
+          'event_type_id' => [
             'title' => ts('Event Type'),
-          ),
-          'event_start_date' => array(
+          ],
+          'event_start_date' => [
             'title' => ts('Event Start Date'),
-          ),
-          'event_end_date' => array('title' => ts('Event End Date')),
-          'total_participants' => array(
+          ],
+          'event_end_date' => ['title' => ts('Event End Date')],
+          'total_participants' => [
             'title' => ts('Total participants'),
             'dbAlias' => 'COUNT(*)',
             'default' => TRUE,
-          ),
-          'counted_participants' => array(
+          ],
+          'counted_participants' => [
             'title' => ts('All counted participants'),
             // TODO: 'is_counted' is a field of participant_status_type. It should be qualified with a table alias.
             'dbAlias' => 'SUM(is_counted)',
-          ),
-          'uncounted_participants' => array(
+          ],
+          'uncounted_participants' => [
             'title' => ts('All uncounted participants'),
             // TODO: 'is_counted' is a field of participant_status_type. It should be prefixed  with a table alias.
             'dbAlias' => 'SUM(1 - is_counted)',
-          ),
-        ),
-        'filters' => array(
-          'id' => array(
+          ],
+        ],
+        'filters' => [
+          'id' => [
             'title' => ts('Event'),
             'operatorType' => CRM_Report_Form::OP_ENTITYREF,
             'type' => CRM_Utils_Type::T_INT,
-            'attributes' => array('select' => array('minimumInputLength' => 0)),
-          ),
-          'event_type_id' => array(
+            'attributes' => ['select' => ['minimumInputLength' => 0]],
+          ],
+          'event_type_id' => [
             'name' => 'event_type_id',
             'title' => ts('Event Type'),
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_OptionGroup::values('event_type'),
-          ),
-          'event_start_date' => array(
+          ],
+          'event_start_date' => [
             'title' => 'Event Start Date',
             'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-          'event_end_date' => array(
+          ],
+          'event_end_date' => [
             'title' => 'Event End Date',
             'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-        ),
-        'order_bys' => array(
-          'title' => array('title' => ts('Event Title')),
+          ],
+        ],
+        'order_bys' => [
+          'title' => ['title' => ts('Event Title')],
           'event_start_date' => NULL,
           'event_end_date' => NULL,
-        ),
+        ],
         'grouping' => 'event-fields',
-        'group_bys' => array(
-          'id' => array(
+        'group_bys' => [
+          'id' => [
             'title' => ts('Event ID'),
             'default' => TRUE,
-          ),
-        ),
-      ),
-      'civicrm_participant' => array(
+          ],
+        ],
+      ],
+      'civicrm_participant' => [
         'dao' => 'CRM_Event_DAO_Participant',
-      ),
-      'civicrm_participant_status_type' => array(
+      ],
+      'civicrm_participant_status_type' => [
         'dao' => 'CRM_Event_DAO_ParticipantStatusType',
-      )
-    );
+      ]
+    ];
 
     // Add columns for each searchable role.
     $roles = CRM_Event_BAO_Participant::buildOptions('role_id', 'search');
@@ -135,18 +135,18 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
       // I don't like inserting things into SQL, so let's validate first:
       is_numeric($roleId) or die('WTF');
 
-      $this->_columns['civicrm_event']['fields']["counted_$roleId"] = array(
+      $this->_columns['civicrm_event']['fields']["counted_$roleId"] = [
         'title' => ts("Counted ${label}"),
         // TODO: qualify role_id and is_counted
         'dbAlias' => "SUM(role_id = $roleId AND is_counted = 1)",
         'default' => TRUE,
-      );
-      $this->_columns['civicrm_event']['fields']["uncounted_$roleId"] = array(
+      ];
+      $this->_columns['civicrm_event']['fields']["uncounted_$roleId"] = [
         'title' => ts("Uncounted ${label}"),
         // TODO: qualify role_id and is_counted
         'dbAlias' => "SUM(role_id = $roleId AND is_counted = 0)",
         'default' => TRUE,
-      );
+      ];
     }
 
     parent::__construct();
@@ -222,7 +222,7 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
    * Build header for table.
    */
   public function buildColumnHeaders() {
-    $this->_columnHeaders = array();
+    $this->_columnHeaders = [];
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
         foreach ($table['fields'] as $fieldName => $field) {
@@ -250,10 +250,10 @@ class CRM_Eventsearch_Form_Report_ParticipantStats extends CRM_Report_Form_Event
 
     $this->setPager();
 
-    $rows = array();
+    $rows = [];
     $count = 0;
     while ($dao->fetch()) {
-      $row = array();
+      $row = [];
       foreach ($this->_columnHeaders as $key => $value) {
         if (($key == 'civicrm_event_start_date') ||
           ($key == 'civicrm_event_end_date')

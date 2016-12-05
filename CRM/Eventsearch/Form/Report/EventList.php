@@ -39,10 +39,10 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
 
   protected $_add2groupSupported = FALSE;
 
-  protected $_customGroupExtends = array(
+  protected $_customGroupExtends = [
     'Event',
-  );
-  public $_drilldownReport = array('event/income' => 'Link to Detail Report');
+  ];
+  public $_drilldownReport = ['event/income' => 'Link to Detail Report'];
 
 
   /**
@@ -50,61 +50,61 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
    */
   public function __construct() {
 
-    $this->_columns = array(
-      'civicrm_event' => array(
+    $this->_columns = [
+      'civicrm_event' => [
         'dao' => 'CRM_Event_DAO_Event',
-        'fields' => array(
-          'id' => array(
+        'fields' => [
+          'id' => [
             'no_display' => TRUE,
             'required' => TRUE,
-          ),
-          'title' => array(
+          ],
+          'title' => [
             'title' => ts('Event Title'),
             'required' => TRUE,
-          ),
-          'event_type_id' => array(
+          ],
+          'event_type_id' => [
             'title' => ts('Event Type'),
             'required' => TRUE,
-          ),
-          'event_start_date' => array(
+          ],
+          'event_start_date' => [
             'title' => ts('Event Start Date'),
-          ),
-          'event_end_date' => array('title' => ts('Event End Date')),
-        ),
-        'filters' => array(
-          'id' => array(
+          ],
+          'event_end_date' => ['title' => ts('Event End Date')],
+        ],
+        'filters' => [
+          'id' => [
             'title' => ts('Event'),
             'operatorType' => CRM_Report_Form::OP_ENTITYREF,
             'type' => CRM_Utils_Type::T_INT,
-            'attributes' => array('select' => array('minimumInputLength' => 0)),
-          ),
-          'event_type_id' => array(
+            'attributes' => ['select' => ['minimumInputLength' => 0]],
+          ],
+          'event_type_id' => [
             'name' => 'event_type_id',
             'title' => ts('Event Type'),
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_OptionGroup::values('event_type'),
-          ),
-          'event_start_date' => array(
+          ],
+          'event_start_date' => [
             'title' => 'Event Start Date',
             'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-          'event_end_date' => array(
+          ],
+          'event_end_date' => [
             'title' => 'Event End Date',
             'operatorType' => CRM_Report_Form::OP_DATE,
-          ),
-        ),
-        'order_bys' => array(
-          'title' => array('title' => ts('Event Title')),
+          ],
+        ],
+        'order_bys' => [
+          'title' => ['title' => ts('Event Title')],
           'event_start_date' => NULL,
           'event_end_date' => NULL,
-        ),
-      ),
+        ],
+      ],
       // I don't really need loc_block, except for joining.
-      'civicrm_loc_block' => array(
+      'civicrm_loc_block' => [
         'dao' => 'CRM_Core_DAO_LocBlock',
-      ),
-    );
+      ],
+    ];
     $this->_columns += $this->getAddressColumns();
     parent::__construct();
   }
@@ -114,7 +114,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
   }
 
   public function select() {
-    $select = array();
+    $select = [];
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
         foreach ($table['fields'] as $fieldName => $field) {
@@ -139,7 +139,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
   }
 
   public function where() {
-    $clauses = array();
+    $clauses = [];
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('filters', $table)) {
         foreach ($table['filters'] as $fieldName => $field) {
@@ -210,7 +210,7 @@ class CRM_Eventsearch_Form_Report_EventList extends CRM_Report_Form_Event {
     $rows = array();
     $count = 0;
     while ($dao->fetch()) {
-      $row = array();
+      $row = [];
       foreach ($this->_columnHeaders as $key => $value) {
         if (($key == 'civicrm_event_start_date') ||
           ($key == 'civicrm_event_end_date')
